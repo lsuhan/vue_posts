@@ -1,6 +1,10 @@
 import HomeView from '@/views/HomeView.vue';
 import AboutView from '@/views/AboutView.vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+	createRouter,
+	createWebHashHistory,
+	createWebHistory,
+} from 'vue-router';
 import PostCreateView from '@/views/posts/PostCreateView.vue';
 import PostDetailView from '@/views/posts/PostDetailView.vue';
 import PostEditView from '@/views/posts/PostEditView.vue';
@@ -83,7 +87,8 @@ const routes = [
 ];
 
 const router = createRouter({
-	history: createWebHistory('/'),
+	history: createWebHistory(), //https://router.vuejs-korea.org/ko/guide/essentials/history-mode.html#html5-mode 자세한 내용 참고
+	// history: createWebHashHistory(),
 	routes,
 });
 

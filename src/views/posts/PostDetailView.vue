@@ -64,7 +64,8 @@ fetchPost();
 // };
 
 const goListPage = () => router.push({ name: 'PostList' });
-const goEditPage = () => router.push({ name: 'PostEdit', params: { id: id } });
+const goEditPage = () =>
+	router.push({ name: 'PostEdit', params: { id: props.id } });
 </script>
 
 <style lang="scss" scoped></style>
