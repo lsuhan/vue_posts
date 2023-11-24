@@ -12,11 +12,18 @@
 				></PostItem>
 			</div>
 		</div>
+		<hr />
+		<!--id로 props 전달-->
+		<AppCard>
+			<PostDetailView :id="3"></PostDetailView>
+		</AppCard>
 	</div>
 </template>
 
 <script setup>
+import PostDetailView from './PostDetailView.vue';
 import PostItem from '@/components/posts/PostItem.vue';
+import AppCard from '@/components/AppCard.vue';
 import { ref } from 'vue';
 import { getPosts } from '@/api/posts';
 import { useRouter } from 'vue-router';

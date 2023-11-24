@@ -36,6 +36,13 @@ const routes = [
 		path: '/posts/:id',
 		name: 'PostDetail',
 		component: PostDetailView,
+		// props: true,
+		//함수형으로 props 던지기
+		props: route => {
+			return {
+				id: parseInt(route.params.id),
+			};
+		},
 	},
 	{
 		path: '/posts/:id/edit',
