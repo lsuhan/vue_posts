@@ -5,6 +5,11 @@ import PostCreateView from '@/views/posts/PostCreateView.vue';
 import PostDetailView from '@/views/posts/PostDetailView.vue';
 import PostEditView from '@/views/posts/PostEditView.vue';
 import PostListView from '@/views/posts/PostListView.vue';
+import NotFoundView from '@/views/error/NotFoundView.vue';
+import NestedView from '@/views/nested/NestedView.vue';
+import NestedOneView from '@/views/nested/NestedOneView.vue';
+import NestedTwoView from '@/views/nested/NestedTwoView.vue';
+import NestedHomeView from '@/views/nested/NestedHomeView.vue';
 
 const routes = [
 	{
@@ -36,6 +41,37 @@ const routes = [
 		path: '/posts/:id/edit',
 		name: 'PostEdit',
 		component: PostEditView,
+	},
+	{
+		path: '/:pathMatch(.*)*',
+		name: 'NotFound',
+		component: NotFoundView,
+	},
+
+	//중첨라우팅.
+	{
+		path: '/nested',
+		name: 'NestedView',
+		component: NestedView,
+		children: [
+			//중첩 라우팅
+			{
+				// /nested 로 왔을때 default 페이지
+				path: '', //슬러쉬 넣지마. 절대 경로 되자나.
+				name: 'NestedHomeView',
+				component: NestedHomeView,
+			},
+			{
+				path: 'one', //슬러쉬 넣지마. 절대 경로 되자나.
+				name: 'NestedOne',
+				component: NestedOneView,
+			},
+			{
+				path: 'two',
+				name: 'NestedTwo',
+				component: NestedTwoView,
+			},
+		],
 	},
 ];
 
