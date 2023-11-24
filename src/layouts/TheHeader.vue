@@ -17,10 +17,24 @@
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav me-auto">
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="#">Home</a>
+							<!--a태그로 하면 페이징 리로딩 된. 하지만 vuew 라우터로 라우팅 하면 리로딩 안되고 page전환만됨-->
+							<!-- active-class 현재 페이지로 갈때 class 를 추가해줄수있음.-->
+							<RouterLink
+								class="nav-link"
+								active-class="active"
+								aria-current="page"
+								to="/"
+								>Home</RouterLink
+							>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">About</a>
+							<RouterLink
+								class="nav-link"
+								active-class="active"
+								aria-current="page"
+								to="/about"
+								>About</RouterLink
+							>
 						</li>
 					</ul>
 					<form class="d-flex" role="search">
