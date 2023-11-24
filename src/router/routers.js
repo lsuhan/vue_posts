@@ -1,10 +1,6 @@
 import HomeView from '@/views/HomeView.vue';
 import AboutView from '@/views/AboutView.vue';
-import {
-	createRouter,
-	createWebHashHistory,
-	createWebHistory,
-} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import PostCreateView from '@/views/posts/PostCreateView.vue';
 import PostDetailView from '@/views/posts/PostDetailView.vue';
 import PostEditView from '@/views/posts/PostEditView.vue';
