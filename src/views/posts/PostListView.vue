@@ -2,7 +2,11 @@
 	<div>
 		<h2>{{ $route.name }}</h2>
 		<hr class="my-4" />
-		<form @submit.prevent="">
+		<PostFilter
+			v-model:title="params.title_like"
+			v-model:limit="params._limit"
+		></PostFilter>
+		<!-- <form @submit.prevent="">
 			<div class="row g-3">
 				<div class="col">
 					<input v-model="params.title_like" type="text" class="form-control" />
@@ -15,56 +19,27 @@
 					</select>
 				</div>
 			</div>
-		</form>
+		</form> -->
 		<hr class="my-4" />
 		<div class="row g-3">
-			<div v-for="post in posts" :key="post.id" class="col-4">
-				<PostItem
-					:title="post.title"
-					:content="post.content"
-					:created-at="post.createdAt"
-					@click="goPage(post.id)"
-				></PostItem>
-			</div>
+			<AppGrid :items="posts">
+				<template v-slot="{ item }">
+					<PostItem
+						:title="item.title"
+						:content="item.content"
+						:created-at="item.createdAt"
+						@click="goPage(item.id)"
+					></PostItem>
+				</template>
+			</AppGrid>
 		</div>
 
-		<nav class="mt-5" aria-label="Page navigation example">
-			<ul class="pagination justify-content-center">
-				<li class="page-item" :class="{ disabled: !(params._page > 1) }">
-					<a
-						class="page-link"
-						href="#"
-						aria-label="Previous"
-						@click.prevent="--params._page"
-					>
-						<span aria-hidden="true">&laquo;</span>
-					</a>
-				</li>
-				<li
-					v-for="item in pageCount"
-					:key="item"
-					class="page-item"
-					:class="{ active: params._page === item }"
-				>
-					<a class="page-link" @click.prevent="params._page = item" href="#">{{
-						item
-					}}</a>
-				</li>
-				<li
-					class="page-item"
-					:class="{ disabled: !(params._page < pageCount) }"
-				>
-					<a
-						class="page-link"
-						href="#"
-						aria-label="Next"
-						@click.prevent="++params._page"
-					>
-						<span aria-hidden="true">&raquo;</span>
-					</a>
-				</li>
-			</ul>
-		</nav>
+		<AppPagination
+			:current-page="params._page"
+			:page-count="pageCount"
+			@page="page => (params._page = page)"
+		></AppPagination>
+
 		<hr class="my-5" />
 		<!--id로 props 전달-->
 		<AppCard>
@@ -81,6 +56,9 @@ import { ref, watchEffect } from 'vue';
 import { getPosts } from '@/api/posts';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
+import AppPagination from '@/components/AppPagination.vue';
+import AppGrid from '@/components/AppGrid.vue';
+import PostFilter from '@/components/posts/PostFilter.vue';
 const posts = ref([]);
 const router = useRouter();
 const params = ref({
