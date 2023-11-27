@@ -2,7 +2,10 @@
 	<form>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">제목</label>
+			<!--autofocus 는 적용안됨 왜냐면 동적이라 그래 autifocus는 한번만 실행됨-->
 			<input
+				v-focus
+				v-color="'blue'"
 				:value="title"
 				@input="$emit('update:title', $event.target.value)"
 				type="text"
@@ -27,6 +30,11 @@
 </template>
 
 <script setup>
+// const vFocus = {
+// 	mounted: el => {
+// 		el.focus();
+// 	},
+// };
 defineProps({
 	title: String,
 	content: String,
