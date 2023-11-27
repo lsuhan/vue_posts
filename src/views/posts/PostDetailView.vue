@@ -42,8 +42,6 @@ const props = defineProps({
 	id: Number,
 });
 
-console.log(props.id);
-
 const router = useRouter();
 //router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
 // const route = useRoute();
