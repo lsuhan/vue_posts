@@ -1,5 +1,9 @@
 <template>
-	<div>
+	<AppLoading v-if="loading"></AppLoading>
+	<AppError v-else-if="error" :message="error.message" />
+
+	<AppError v-if="removeError" :message="removeError.message"></AppError>
+	<div v-else>
 		<h2>{{ post.title }}</h2>
 		<p>{{ post.content }}</p>
 		<p class="text-muted">
@@ -26,7 +30,20 @@
 			</div>
 
 			<div class="col-auto">
-				<button class="btn btn-outline-danger" @click="remove">삭제</button>
+				<button
+					class="btn btn-outline-danger"
+					@click="remove"
+					:disabled="removeLoading"
+				>
+					<template v-if="removeLoading">
+						<span
+							class="spinner-grow spinner-grow-sm"
+							aria-hidden="true"
+						></span>
+						<span class="visually-hidden" role="status">Loading...</span>
+					</template>
+					<template v-else> 삭제 </template>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -37,6 +54,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { getPostById } from '@/api/posts';
 import { deletePost } from '@/api/posts';
 import { ref } from 'vue';
+import AppLoading from '@/components/app/AppLoading.vue';
+import AppError from '@/components/app/AppError.vue';
 
 // props 받기 postListView 에서 id 로 던진 props 이고 routers.js 에 props:true 걸어줘야 함요
 const props = defineProps({
@@ -50,13 +69,18 @@ const router = useRouter();
 // const id = route.params.id;
 
 const post = ref({});
+const error = ref(null);
+const loading = ref(false);
 const fetchPost = async () => {
 	try {
+		loading.value = true;
 		//router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
 		const { data } = await getPostById(props.id);
 		setPost(data);
-	} catch (error) {
-		console.log(error);
+	} catch (err) {
+		error.value = err;
+	} finally {
+		loading.value = false;
 	}
 
 	// post.value = { ...data };
@@ -69,16 +93,22 @@ const setPost = ({ title, content, createdAt }) => {
 };
 fetchPost();
 
+const removeError = ref(null);
+const removeLoading = ref(false);
+
 const remove = async () => {
 	try {
 		if (confirm('삭제하시겠습니까?')) {
+			removeLoading.value = true;
 			await deletePost(props.id);
 			router.push({
 				name: 'PostList',
 			});
 		}
 	} catch (error) {
-		console.log(error);
+		removeError.value = error;
+	} finally {
+		removeLoading.value = false;
 	}
 };
 

@@ -2,6 +2,7 @@
 	<div>
 		<h2>{{ $route.name }}</h2>
 		<hr class="my-4" />
+
 		<PostFilter
 			v-model:title="params.title_like"
 			v-model:limit="params._limit"
@@ -21,19 +22,25 @@
 			</div>
 		</form> -->
 		<hr class="my-4" />
-		<div class="row g-3">
-			<AppGrid :items="posts">
-				<template v-slot="{ item }">
-					<PostItem
-						:title="item.title"
-						:content="item.content"
-						:created-at="item.createdAt"
-						@click="goPage(item.id)"
-						@modal="openModal(item)"
-					></PostItem>
-				</template>
-			</AppGrid>
-		</div>
+
+		<AppLoading v-if="loading"></AppLoading>
+		<AppError v-else-if="error" :message="error.message" />
+
+		<template v-else>
+			<div class="row g-3">
+				<AppGrid :items="posts">
+					<template v-slot="{ item }">
+						<PostItem
+							:title="item.title"
+							:content="item.content"
+							:created-at="item.createdAt"
+							@click="goPage(item.id)"
+							@modal="openModal(item)"
+						></PostItem>
+					</template>
+				</AppGrid>
+			</div>
+		</template>
 
 		<AppPagination
 			:current-page="params._page"
@@ -41,6 +48,7 @@
 			@page="page => (params._page = page)"
 		></AppPagination>
 
+		<!--컴포넌트 템블릿의 일부ㅡㄹ 해당 컴포넌트의 dom 계츨ㅇ 외부 노드로 이동함으로써 modal 창 깨짐을 방지-->
 		<Teleport to="#modal">
 			<PostModal
 				v-model="show"
@@ -69,8 +77,12 @@ import { ref, watchEffect } from 'vue';
 import { getPosts } from '@/api/posts';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
+import AppLoading from '@/components/app/AppLoading.vue';
+import AppError from '@/components/app/AppError.vue';
 
 const posts = ref([]);
+const error = ref(null);
+const loading = ref(false);
 const router = useRouter();
 const params = ref({
 	_sort: 'createdAt',
@@ -87,11 +99,14 @@ const pageCount = computed(() =>
 
 const fetchPosts = async () => {
 	try {
+		loading.value = true;
 		const { data, headers } = await getPosts(params.value);
 		posts.value = data;
 		totalCount.value = headers['x-total-count'];
-	} catch (error) {
-		console.log(error);
+	} catch (err) {
+		error.value = err;
+	} finally {
+		loading.value = false;
 	}
 
 	//위에 문법이랑 똑같은 문법
