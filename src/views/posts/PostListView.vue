@@ -73,16 +73,13 @@ import PostItem from '@/components/posts/PostItem.vue';
 import PostFilter from '@/components/posts/PostFilter.vue';
 import PostModal from '@/components/posts/PostModal.vue';
 
-import { ref, watchEffect } from 'vue';
-import { getPosts } from '@/api/posts';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import AppLoading from '@/components/app/AppLoading.vue';
 import AppError from '@/components/app/AppError.vue';
+import { useAxios } from '@/hooks/useAxios';
 
-const posts = ref([]);
-const error = ref(null);
-const loading = ref(false);
 const router = useRouter();
 const params = ref({
 	_sort: 'createdAt',
@@ -91,39 +88,49 @@ const params = ref({
 	_limit: 3,
 	title_like: '',
 });
+
+const {
+	response,
+	data: posts,
+	error,
+	loading,
+} = useAxios('/posts', { params });
 //pagination
-const totalCount = ref(0);
+const totalCount = computed(
+	() => response.value?.headers['x-total-count'] ?? null,
+);
 const pageCount = computed(() =>
 	Math.ceil(totalCount.value / params.value._limit),
 );
 
-const fetchPosts = async () => {
-	try {
-		loading.value = true;
-		const { data, headers } = await getPosts(params.value);
-		posts.value = data;
-		totalCount.value = headers['x-total-count'];
-	} catch (err) {
-		error.value = err;
-	} finally {
-		loading.value = false;
-	}
+// const fetchPosts = async () => {
+// 	try {
+// 		loading.value = true;
+// 		const { data, headers } = await getPosts(params.value);
+// 		posts.value = data;
+// 		totalCount.value = headers['x-total-count'];
+// 	} catch (err) {
+// 		error.value = err;
+// 	} finally {
+// 		loading.value = false;
+// 	}
+// };
 
-	//위에 문법이랑 똑같은 문법
-	// ({ data: posts.value } = await getPosts());
+// 	//위에 문법이랑 똑같은 문법
+// 	// ({ data: posts.value } = await getPosts());
 
-	//a async 로 사용할게용
-	// getPosts()
-	// 	.then(response => {
-	// 		console.log(response);
-	// 	})
-	// 	.catch(error => {
-	// 		console.log('error', error);
-	// 	});
-};
+// 	//a async 로 사용할게용
+// 	// getPosts()
+// 	// 	.then(response => {
+// 	// 		console.log(response);
+// 	// 	})
+// 	// 	.catch(error => {
+// 	// 		console.log('error', error);
+// 	// 	});
+// };
 
 // fetchPosts();
-watchEffect(fetchPosts); // 반응형 데이터가 변경됨으로 페이징 할떄 바로 메서드 다시 호출함
+// watchEffect(fetchPosts); // 반응형 데이터가 변경됨으로 페이징 할떄 바로 메서드 다시 호출함
 
 const goPage = id => {
 	router.push(`/posts/${id}`);

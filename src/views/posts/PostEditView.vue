@@ -43,59 +43,87 @@ import { useRoute, useRouter } from 'vue-router';
 import { getPostById, updatePost } from '@/api/posts';
 import PostForm from '@/components/posts/PostForm.vue';
 import useAlert from '@/composables/alert';
+import { useAxios } from '@/hooks/useAxios';
 
 const route = useRoute();
 const router = useRouter();
 
-const form = ref({
-	title: null,
-	content: null,
-	createdAt: Date.now(),
-});
-const error = ref(null);
-const loading = ref(false);
+// const form = ref({
+// 	title: null,
+// 	content: null,
+// 	createdAt: Date.now(),
+// });
 
-const fetchPost = async () => {
-	try {
-		loading.value = true;
-		//router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
-		const { data } = await getPostById(route.params.id);
-		setPost(data);
-		// post.value = { ...data };
-	} catch (err) {
-		error.value = err;
-	} finally {
-		loading.value = false;
-	}
+const { error, loading, data: form } = useAxios(`/posts/${route.params.id}`);
+
+const {
+	error: editError,
+	loading: editLoading,
+	execute,
+} = useAxios(
+	`/posts/${route.params.id}`,
+	{ method: 'patch' },
+	{
+		immediate: false,
+		onSuccess: () => {
+			router.push({
+				name: 'PostDetail',
+				params: route.params.id,
+			});
+
+			vSuccess('수정이 완료 되었습니다.');
+		},
+		onError: err => {
+			editError.value = err;
+			vAlert('네트워크 오류');
+		},
+	},
+);
+
+const edit = () => {
+	execute({
+		...form.value,
+	});
 };
 
-const setPost = ({ title, content, createdAt }) => {
-	form.value.title = title;
-	form.value.content = content;
-	form.value.createdAt = createdAt;
-};
-fetchPost();
+// const fetchPost = async () => {
+// 	try {
+// 		loading.value = true;
+// 		//router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
+// 		const { data } = await getPostById(route.params.id);
+// 		setPost(data);
+// 		// post.value = { ...data };
+// 	} catch (err) {
+// 		error.value = err;
+// 	} finally {
+// 		loading.value = false;
+// 	}
+// };
 
-const editError = ref(null);
-const editLoading = ref(false);
+// const setPost = ({ title, content, createdAt }) => {
+// 	form.value.title = title;
+// 	form.value.content = content;
+// 	form.value.createdAt = createdAt;
+// };
+// fetchPost();
 
-const edit = async () => {
-	try {
-		editLoading.value = true;
-		await updatePost(route.params.id, { ...form.value });
-		router.push({
-			name: 'PostDetail',
-			params: route.params.id,
-		});
+// const edit = async () => {
+// 	try {
+// 		editLoading.value = true;
+// 		await updatePost(route.params.id, { ...form.value });
+// 		router.push({
+// 			name: 'PostDetail',
+// 			params: route.params.id,
+// 		});
 
-		vSuccess('수정이 완료 되었습니다.');
-	} catch (err) {
-		editError.value = err;
-		vAlert('네트워크 오류');
-	} finally {
-		editLoading.value = false;
-	}
-};
+// 		vSuccess('수정이 완료 되었습니다.');
+// 	} catch (err) {
+// 		editError.value = err;
+// 		vAlert('네트워크 오류');
+// 	} finally {
+// 		editLoading.value = false;
+// 	}
+// };
 const goDetailPage = () =>
 	router.push({ name: 'PostDetail', params: route.params.id });
 

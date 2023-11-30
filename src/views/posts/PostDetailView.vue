@@ -2,7 +2,7 @@
 	<AppLoading v-if="loading"></AppLoading>
 	<AppError v-else-if="error" :message="error.message" />
 
-	<AppError v-if="removeError" :message="removeError.message"></AppError>
+	<AppError v-else-if="removeError" :message="removeError.message"></AppError>
 	<div v-else>
 		<h2>{{ post.title }}</h2>
 		<p>{{ post.content }}</p>
@@ -50,12 +50,12 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
-import { getPostById } from '@/api/posts';
+import { useRouter } from 'vue-router';
 import { deletePost } from '@/api/posts';
 import { ref } from 'vue';
 import AppLoading from '@/components/app/AppLoading.vue';
 import AppError from '@/components/app/AppError.vue';
+import { useAxios } from '@/hooks/useAxios';
 
 // props 받기 postListView 에서 id 로 던진 props 이고 routers.js 에 props:true 걸어줘야 함요
 const props = defineProps({
@@ -68,47 +68,57 @@ const router = useRouter();
 // const route = useRoute();
 // const id = route.params.id;
 
-const post = ref({});
-const error = ref(null);
-const loading = ref(false);
-const fetchPost = async () => {
-	try {
-		loading.value = true;
-		//router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
-		const { data } = await getPostById(props.id);
-		setPost(data);
-	} catch (err) {
-		error.value = err;
-	} finally {
-		loading.value = false;
-	}
+// const post = ref({});
+// const error = ref(null);
+// const loading = ref(false);
 
-	// post.value = { ...data };
-};
+const { error, loading, data: post } = useAxios(`/posts/${props.id}`);
 
-const setPost = ({ title, content, createdAt }) => {
-	post.value.title = title;
-	post.value.content = content;
-	post.value.createdAt = createdAt;
-};
-fetchPost();
+// const fetchPost = async () => {
+// 	try {
+// 		loading.value = true;
+// 		//router 에서 param 받음. 현재 props 예제하면서 잠깐 주석
+// 		const { data } = await getPostById(props.id);
+// 		setPost(data);
+// 	} catch (err) {
+// 		error.value = err;
+// 	} finally {
+// 		loading.value = false;
+// 	}
 
-const removeError = ref(null);
-const removeLoading = ref(false);
+// 	// post.value = { ...data };
+// };
 
-const remove = async () => {
-	try {
-		if (confirm('삭제하시겠습니까?')) {
-			removeLoading.value = true;
-			await deletePost(props.id);
+// const setPost = ({ title, content, createdAt }) => {
+// 	post.value.title = title;
+// 	post.value.content = content;
+// 	post.value.createdAt = createdAt;
+// };
+// fetchPost();
+
+const {
+	error: removeError,
+	loading: removeLoading,
+	execute,
+} = useAxios(
+	`/posts/${props.id}`,
+	{ method: 'delete' },
+	{
+		immediate: false,
+		onSuccess: () => {
 			router.push({
 				name: 'PostList',
 			});
-		}
-	} catch (error) {
-		removeError.value = error;
-	} finally {
-		removeLoading.value = false;
+		},
+		onError: error => {
+			removeError.value = error;
+		},
+	},
+);
+
+const remove = async () => {
+	if (confirm('삭제하시겠습니까?')) {
+		execute();
 	}
 };
 
