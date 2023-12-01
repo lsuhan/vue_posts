@@ -38,11 +38,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getPostById, updatePost } from '@/api/posts';
 import PostForm from '@/components/posts/PostForm.vue';
-import useAlert from '@/composables/alert';
+import { useAlert } from '@/composables/alert';
 import { useAxios } from '@/hooks/useAxios';
 
 const route = useRoute();

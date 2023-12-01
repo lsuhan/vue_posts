@@ -9,6 +9,7 @@ import App from './App.vue';
 import globalComponents from './plugins/global-components';
 import globalDirectives from './plugins/global-directives';
 import dayjs from './plugins/dayjs';
+import { createPinia } from 'pinia';
 
 const app = createApp(App);
 // app.directive('focus', focus); //커스텀 디렉티브
@@ -19,6 +20,7 @@ app.use(funcPlugins); //플러그인 등록
 app.use(objPlugins, { name: '짐코딩' }); // 플러그인 등록
 app.use(person, { name: '홍길동' });
 app.use(router); // 플러그인 등록
+app.use(createPinia());
 app.mount('#app');
 import 'bootstrap/dist/js/bootstrap.js';
 

@@ -35,7 +35,7 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import PostForm from '@/components/posts/PostForm.vue';
-import useAlert from '@/composables/alert';
+import { useAlert } from '@/composables/alert';
 import AppError from '@/components/app/AppError.vue';
 import { useAxios } from '@/hooks/useAxios';
 
