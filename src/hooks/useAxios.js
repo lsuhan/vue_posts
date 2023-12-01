@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { isRef, ref, unref, watchEffect } from 'vue';
+import { isRef, ref, toValue, unref, watchEffect } from 'vue';
 
 axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
 
@@ -26,7 +26,7 @@ export const useAxios = (url, config = {}, options = {}) => {
 		data.value = null;
 		error.value = null;
 		loading.value = true;
-		axios(url, {
+		axios(toValue(url), {
 			...defaultConfig,
 			...config,
 			params: unref(params),
@@ -49,7 +49,7 @@ export const useAxios = (url, config = {}, options = {}) => {
 				loading.value = false;
 			});
 	};
-	if (isRef(params)) {
+	if (isRef(params) || isRef(url)) {
 		watchEffect(execute);
 	} else {
 		if (immediate) {

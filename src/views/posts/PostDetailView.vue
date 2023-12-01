@@ -5,6 +5,7 @@
 	<AppError v-else-if="removeError" :message="removeError.message"></AppError>
 	<div v-else>
 		<h2>{{ post.title }}</h2>
+		<p>{{ props.id }} :isOdd {{ isOdd }}</p>
 		<p>{{ post.content }}</p>
 		<p class="text-muted">
 			{{ $dayjs(post.createdAt).format('YYYY.MM.DD HH:mm:ss') }}
@@ -52,10 +53,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { deletePost } from '@/api/posts';
-import { ref } from 'vue';
+import { ref, toRef, toRefs } from 'vue';
 import AppLoading from '@/components/app/AppLoading.vue';
 import AppError from '@/components/app/AppError.vue';
 import { useAxios } from '@/hooks/useAxios';
+import { computed } from 'vue';
+import { useNumber } from '@/composables/number';
 
 // props 받기 postListView 에서 id 로 던진 props 이고 routers.js 에 props:true 걸어줘야 함요
 const props = defineProps({
@@ -71,8 +74,11 @@ const router = useRouter();
 // const post = ref({});
 // const error = ref(null);
 // const loading = ref(false);
-
-const { error, loading, data: post } = useAxios(`/posts/${props.id}`);
+// const idRef = toRef(props, 'id');
+const { id: idRef } = toRefs(props);
+const { isOdd } = useNumber(idRef);
+const url = computed(() => `/posts/${props.id}`);
+const { error, loading, data: post } = useAxios(url);
 
 // const fetchPost = async () => {
 // 	try {

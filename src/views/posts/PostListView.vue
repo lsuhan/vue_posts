@@ -36,6 +36,7 @@
 							:created-at="item.createdAt"
 							@click="goPage(item.id)"
 							@modal="openModal(item)"
+							@preview="selectPreview(item.id)"
 						></PostItem>
 					</template>
 				</AppGrid>
@@ -61,8 +62,8 @@
 
 		<hr class="my-5" />
 		<!--id로 props 전달-->
-		<AppCard>
-			<PostDetailView :id="3"></PostDetailView>
+		<AppCard v-if="previewId">
+			<PostDetailView :id="previewId"></PostDetailView>
 		</AppCard>
 	</div>
 </template>
@@ -81,6 +82,9 @@ import AppError from '@/components/app/AppError.vue';
 import { useAxios } from '@/hooks/useAxios';
 
 const router = useRouter();
+const previewId = ref(null);
+const selectPreview = id => (previewId.value = id);
+
 const params = ref({
 	_sort: 'createdAt',
 	_order: 'desc',

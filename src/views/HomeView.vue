@@ -13,6 +13,8 @@
 		<hr />
 		<h2>{{ $person.name }}</h2>
 		<button class="btn btn-primary" @click="person.say">클릭 전역</button>
+		<hr />
+		{{ position }}
 	</div>
 </template>
 
@@ -27,7 +29,7 @@ export default {
 </script>
 
 <script setup>
-import { inject } from 'vue';
+import { inject, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // 라우트 객체를 가져올수 있음 2번방법
@@ -41,6 +43,11 @@ const goAboutPage = () => {
 
 const person = inject('person');
 console.log(person.name);
+
+const { position } = reactive({
+	x: 100,
+	y: 1000,
+});
 </script>
 
 <style lang="scss" scoped></style>

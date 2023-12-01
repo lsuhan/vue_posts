@@ -33,7 +33,6 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { createPost } from '@/api/posts';
 import { ref } from 'vue';
 import PostForm from '@/components/posts/PostForm.vue';
 import useAlert from '@/composables/alert';
